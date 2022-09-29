@@ -1,25 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, Suspense } from 'react'
+import { Route, Switch } from 'react-router-dom'
+import Login from './pages/Login'
+import Admin from './pages/Admin'
+export default class App extends Component {
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  render() {
+    return (
+      <Suspense fallback={null}>
+        <Switch>
+          <Route exact path="/" component={Login} />
+          <Route exact path="/admin" component={Admin} />
+        </Switch>
+      </Suspense>
+    )
+  }
 }
-
-export default App;

@@ -1,0 +1,70 @@
+.LoginContent {
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/images/暗黑背景.jpg');
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+
+  .login-header {
+    font-size: 30px;
+    color:rgb(222,170,49);
+    text-shadow: 0 0 30px #fffe19;
+    text-align: center;
+    padding-top: 152px;
+  }
+
+  .login-section {
+    position: relative;
+    width: 350px;
+    height: 250px;
+    background-color: rgba(81,5,13,.2);
+    border-radius: 10px;
+    margin: 0 auto;
+    margin-top: 10px;
+    .login-logo{
+      position: absolute;
+      width: 95px;
+      height: 95px;
+      border: 1px solid #760102;
+      border-radius: 50%;
+      left: 50%;
+      transform: translate(-50%);
+      box-shadow: 0 0 30px #feb530;
+    }
+    .login-logo img{
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    .login-form{
+      position: absolute;
+      width: 210px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      margin-top: 42px;
+      max-width: 300px;
+      margin-left: 5px;
+      .passwordInput{
+        margin-top: 10px;
+      }
+      .login-form-button{
+        display: block;
+        width: 100%;
+        margin-bottom: 43px;
+        border: 1px solid rgb(31,34,35);
+        background-color: rgb(40,39,44);
+      }
+    }
+  
+    .login-form input{
+      margin-left: 10px;
+      border-radius: 7px;
+      padding-left: 7px;
+      border: 1px solid rgb(31,34,35);
+      background-color: rgb(40,39,44);
+    }
+
+  }
+}
