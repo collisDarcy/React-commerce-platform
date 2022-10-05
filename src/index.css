@@ -13,6 +13,40 @@ code {
     monospace;
 }
 
+/* 面包屑导航 */
+.ant-breadcrumb li:first-child a {
+  color: rgba(232, 230, 227, 0.90);
+}
+
+.ant-breadcrumb li:last-child a {
+  color: rgba(232, 230, 227, 0.45) !important;
+}
+
+/* 点击底部缩放按钮 */
+.ant-menu.ant-menu-inline-collapsed>.ant-menu-submenu>.ant-menu-submenu-title {
+  left: -13px !important;
+  padding: 0 calc(50% - 76px / 2) !important;
+  text-overflow: clip;
+  margin-left: 23px;
+}
+
+/* 侧边栏居中对齐 */
+/* 没有伸缩的时候 */
+.ant-menu {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: none;
+}
+
+/* 伸缩的时候 */
+.ant-layout-sider-children .ant-menu.ant-menu-inline-collapsed {
+  position: absolute;
+  width: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 /* html,
 body {
   width: 100%;

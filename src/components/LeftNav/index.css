@@ -1,0 +1,22 @@
+.nav-content {
+  height: 100%;
+  background-color: #200832;
+}
+.nav-content .nav-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.nav-content .nav-header img {
+  width: 57px;
+  height: 55px;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #811717;
+}
+.nav-content .nav-header p {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 0;
+  padding-left: 27px;
+}
