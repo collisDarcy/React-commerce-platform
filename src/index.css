@@ -13,7 +13,7 @@ code {
     monospace;
 }
 
-<<<<<<< HEAD
+
 /* 面包屑导航 */
 .ant-breadcrumb li:first-child a {
   color: rgba(232, 230, 227, 0.90);
@@ -48,8 +48,7 @@ code {
   transform: translateY(-50%);
 }
 
-=======
->>>>>>> e64e3c433881778a2b51e839f3370a68ad95763f
+
 /* html,
 body {
   width: 100%;
