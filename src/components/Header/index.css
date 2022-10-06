@@ -1,0 +1,27 @@
+.site-page-header-responsive {
+  height: 209px;
+  background-color: #1a0628;
+}
+.content {
+  position: relative;
+  height: 149px;
+  margin-top: -9px;
+  border-radius: 10px;
+  background-color: #5b4565;
+}
+.content .countDown {
+  position: absolute;
+  top: 50%;
+  right: 120px;
+  transform: translateY(-50%);
+}
+.content .main {
+  padding-top: 18px;
+  padding-left: 33px;
+}
+.content .extra {
+  position: absolute;
+  top: 50%;
+  right: 21px;
+  transform: translateY(-50%);
+}

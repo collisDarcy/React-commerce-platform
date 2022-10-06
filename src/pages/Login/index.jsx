@@ -23,7 +23,6 @@ class Login extends Component {
       const res = await login(username, password);
       const { meta: data } = res.data;
       if (data.status === 200) {
-
         message.success(data.msg);
         this.props.loginAction(true, 'admin');
         this.props.history.replace('/admin');

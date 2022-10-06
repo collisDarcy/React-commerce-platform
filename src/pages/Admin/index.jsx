@@ -46,7 +46,7 @@ class Admin extends Component {
             <LeftNav />
           </Sider>
           <Layout className="site-layout">
-            <Header className="site-layout-background" style={{ padding: 0 }} />
+            <Header className="site-layout-background" style={{ padding: 0 }} username={username} />
             <Content style={{ margin: '36px 16px' }}>
               <Breadcrumb style={{ margin: '16px 0' }}>
                 {

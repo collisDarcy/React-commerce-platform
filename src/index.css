@@ -48,6 +48,11 @@ code {
   transform: translateY(-50%);
 }
 
+/* 改变状态的颜色为绿色--status */
+.ant-statistic-content-value {
+  font-size: 17px;
+  color: rgb(114, 160, 255);
+}
 
 /* html,
 body {
