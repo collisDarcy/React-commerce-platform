@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 class Role extends Component {
   render() {
     return (
-      <div>Role</div>
+      <div>角色路由--登录的角色</div>
     )
   }
 }

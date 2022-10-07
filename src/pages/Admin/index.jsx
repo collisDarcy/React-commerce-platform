@@ -71,7 +71,7 @@ class Admin extends Component {
                     <Route path="/admin/pro_classify" component={ProClassify} />
                     <Route path="/admin/charts" component={Charts} />
                     <Route path="/admin/order" component={Order} />
-                    <Redirect to="/admin/home" />
+                    <Redirect to="/admin/role" />
                   </Switch>
                 </Suspense>
               </div>
