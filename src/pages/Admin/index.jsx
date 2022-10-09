@@ -1,7 +1,7 @@
 import React, { Component, Suspense } from 'react';
 import { Redirect, Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Breadcrumb, Layout } from 'antd';
+import { Layout } from 'antd';
 import { logoutAction } from '../Login/action';
 import Header from '../../components/Header';
 import LeftNav from '../../components/LeftNav';
@@ -18,14 +18,6 @@ import Authority from '../Authority';
 import './index.css';
 const { Content, Footer, Sider } = Layout;
 
-const NavList = [
-  "首页",
-  "用户管理",
-  "权限管理",
-  "商品管理",
-  "订单管理",
-  "数据统计"
-]
 class Admin extends Component {
 
   constructor(props) {
@@ -48,16 +40,6 @@ class Admin extends Component {
           <Layout className="site-layout">
             <Header className="site-layout-background" style={{ padding: 0 }} username={username} />
             <Content style={{ margin: '36px 16px' }}>
-              <Breadcrumb style={{ margin: '16px 0' }}>
-                {
-                  NavList.map((item, index) => {
-                    return (
-                      <Breadcrumb.Item className='active' href='/' key={index}>{item}</Breadcrumb.Item>
-                    )
-                  })
-                }
-
-              </Breadcrumb>
               <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
                 <Suspense>
                   <Switch>
@@ -71,7 +53,7 @@ class Admin extends Component {
                     <Route path="/admin/pro_classify" component={ProClassify} />
                     <Route path="/admin/charts" component={Charts} />
                     <Route path="/admin/order" component={Order} />
-                    <Redirect to="/admin/home" />
+                    <Redirect to="/admin/role" />
                   </Switch>
                 </Suspense>
               </div>

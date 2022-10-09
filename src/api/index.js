@@ -4,4 +4,7 @@
 */
 import ajax from "./ajax";
 export const login = (username, password) => ajax('/login', { username, password }, 'POST');
+
+export const getUserListMethod = (userInfo) => ajax('/users', userInfo, 'GET');
+
 export const add = (user) => ajax('/add', user, 'POST');
