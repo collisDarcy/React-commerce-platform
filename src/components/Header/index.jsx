@@ -124,10 +124,10 @@ class Header extends Component {
       >
         <Content extra={extraContent}>
           <Descriptions size="small" column={1}>
-            <Descriptions.Item label="Author">{this.props.username}</Descriptions.Item>
-            <Descriptions.Item label="Creation Time">2022/10/05</Descriptions.Item>
-            <Descriptions.Item label="Current Time">{this.state.currentTime}</Descriptions.Item>
-            <Descriptions.Item label="Identity">
+            <Descriptions.Item key="1" label="Author">{this.props.username}</Descriptions.Item>
+            <Descriptions.Item key="2" label="Creation Time">2022/10/05</Descriptions.Item>
+            <Descriptions.Item key="3" label="Current Time">{this.state.currentTime}</Descriptions.Item>
+            <Descriptions.Item key="4" label="Identity">
               Admin,user,test
             </Descriptions.Item>
           </Descriptions>

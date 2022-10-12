@@ -12,12 +12,12 @@ import {
   TeamOutlined,
   FileOutlined
 } from '@ant-design/icons';
-function getItem(label, key, icon, children, route) {
+function getItem(label, key, icon, items, route) {
   return {
     label,
     key,
     icon,
-    children,
+    items,
     route
   };
 }
@@ -78,33 +78,33 @@ class LeftNav extends Component {
             items.map((item, index) => {
               return (
                 <SubMenu key={index} title={item.label} onTitleClick={this.openclick} >
-                  {!item.children ? '' : (
-                    item.children.length <= '1' ?
+                  {!item.items ? '' : (
+                    item.items.length <= '1' ?
                       (
                         <><Menu.Item key={item.key} icon={<PieChartOutlined />} >
-                          <Link to={'/admin/' + item.route}>{item.children[0]}</Link>
+                          <Link to={'/admin/' + item.route}>{item.items[0]}</Link>
                         </Menu.Item>
                         </>
                       )
                       :
                       (
-                        item.children.length >= '2' && item.children.length < 3 ?
+                        item.items.length >= '2' && item.items.length < 3 ?
                           <><Menu.Item key="sub2-1" icon={<PieChartOutlined />}>
-                            <Link to="/admin/role">{item.children[0]}</Link>
+                            <Link to="/admin/role">{item.items[0]}</Link>
                           </Menu.Item>
                             <Menu.Item key="sub2-2" icon={< MailOutlined />}>
-                              <Link to="/admin/authority">{item.children[1]}</Link>
+                              <Link to="/admin/authority">{item.items[1]}</Link>
                             </Menu.Item>
                           </>
                           :
                           <><Menu.Item key="sub3-1" icon={< DesktopOutlined />}>
-                            <Link to="/admin/category">{item.children[0]}</Link>
+                            <Link to="/admin/category">{item.items[0]}</Link>
                           </Menu.Item>
                             <Menu.Item key="sub3-2" icon={<TeamOutlined />}>
-                              <Link to="/admin/classify">{item.children[1]}</Link>
+                              <Link to="/admin/classify">{item.items[1]}</Link>
                             </Menu.Item>
                             <Menu.Item key="sub3-3" icon={< FileOutlined />}>
-                              <Link to="/admin/pro_classify">{item.children[2]}</Link>
+                              <Link to="/admin/pro_classify">{item.items[2]}</Link>
                             </Menu.Item>
                           </>
                       )
