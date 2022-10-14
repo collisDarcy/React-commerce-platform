@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import {
   HomeOutlined, UserOutlined, PictureOutlined, FrownOutlined, IdcardOutlined, HddOutlined, GatewayOutlined, FormOutlined, DeleteOutlined, SettingOutlined
 } from '@ant-design/icons';
-import { Breadcrumb, Card, Table, Divider, Radio, Input, message, Switch, Tooltip } from 'antd';
-import { getUserListMethod, switchUserState } from '../../api';
+
+import { Breadcrumb, Card, Table, Divider, Radio, Input, message, Switch, Tooltip, Popconfirm } from 'antd';
+import { getUserListMethod, switchUserState, deleteCurrentUser } from '../../api';
 import { formateDate } from '../../utils/formateDate';
 import './index.css'
 import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem';
@@ -55,13 +56,6 @@ const TitleIcon = [
 ]
 
 
-const ButtonTitle = (
-  <div className='TopHeader'>
-    <Search placeholder="input search text" enterButton size='small' style={{ width: '600px' }} />
-    <button className='create_role'>创建角色</button>
-  </div>
-
-)
 const rowSelection = {
   onChange: (selectedRowKeys, selectedRows) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -137,7 +131,6 @@ class Role extends Component {
   }
   //改变switch的状态值--用户是否在线
   onChange = async (userinfo, state) => {
-    console.log(userinfo, 'useinfo');
     userinfo.mg_state = state;
     const { data: res } = await switchUserState(userinfo);
     if (res.meta.status !== 200) {
@@ -146,6 +139,23 @@ class Role extends Component {
     } else {
       message.success('更新用户状态信息成功!');
     }
+  }
+  //点击添加用户
+  handleCreateRole = () => {
+    console.log('添加用户');
+  }
+  //确认删除
+  onConfirm = async (currentUserInfo) => {
+    const { data: res } = await deleteCurrentUser(currentUserInfo.id);
+    if (res.meta.status !== 200) {
+      return message.error('删除用户失败!')
+    }
+    message.success('删除用户成功!');
+    this.getUserList();
+  }
+  //取消删除
+  onCancel = () => {
+    message.success('取消删除成功!');
   }
   render() {
     const { selectionType, usersList, pagination, loading } = this.state;
@@ -188,7 +198,6 @@ class Role extends Component {
         render: (status, record) => {
           //status是当前的值--mg_state
           //record是每一行的值
-          console.log(status, 'status');
           return (
             <Switch onChange={(state) => this.onChange(record, state)} defaultChecked={status} />
           )
@@ -198,7 +207,9 @@ class Role extends Component {
         title: '操作',
         dataIndex: 'operation',
         align: 'center',
-        render() {
+
+        render: (state, record) => {
+
           return (
             <div className='tableLast'>
               <span>
@@ -206,22 +217,31 @@ class Role extends Component {
                   <FormOutlined />
                 </Tooltip>
               </span>
-              <span>
-                <Tooltip placement='top' title='删除'>
-                  <DeleteOutlined />
-                </Tooltip>
-              </span>
+              <Popconfirm title="Are you sure to delete the user?" onConfirm={() => this.onConfirm(record)} onCancel={this.onCancel}>
+                <span>
+                  <Tooltip placement='top' title='删除'>
+                    <DeleteOutlined />
+                  </Tooltip>
+                </span>
+              </Popconfirm>
               <span>
                 <Tooltip placement='top' title='设置'>
                   <SettingOutlined />
                 </Tooltip>
               </span>
-            </div>
+            </div >
           )
 
         }
       },
     ];
+    const ButtonTitle = (
+      <div className='TopHeader'>
+        <Search placeholder="input search text" enterButton size='small' style={{ width: '600px' }} />
+        <button className='create_role' onClick={this.handleCreateRole}>创建角色</button>
+      </div>
+
+    )
     return (
       <div className='RoleContent' >
         <div className='RoleTop'>
