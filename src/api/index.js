@@ -13,4 +13,4 @@ export const switchUserState = (userInfo) => ajax(`/users/${userInfo.id}/state/$
 //删除用户的接口
 export const deleteCurrentUser = (userInfo) => ajax(`/users/${userInfo}`, {}, 'DELETE');
 //添加用户的接口
-export const add = (user) => ajax('/add', user, 'POST');
+export const addUser = (formInfo) => ajax('/users', formInfo, 'POST');
