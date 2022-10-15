@@ -473,7 +473,7 @@ class Role extends Component {
               <Input />
             </Form.Item>
             <Form.Item
-              name="phone"
+              name="mobile"
               label="Phone Number"
               rules={[
                 { required: true, message: 'Please input your phone number!' },
