@@ -14,3 +14,11 @@ export const switchUserState = (userInfo) => ajax(`/users/${userInfo.id}/state/$
 export const deleteCurrentUser = (userInfo) => ajax(`/users/${userInfo}`, {}, 'DELETE');
 //添加用户的接口
 export const addUser = (formInfo) => ajax('/users', formInfo, 'POST');
+//查询点击修改当前用户的信息
+export const showCurrentUser = (id) => ajax(`/users/${id}`, {}, 'GET');
+//修改用户信息并提交的接口
+export const editUserInfo = (id, userInfo) => ajax(`/users/${id}`, { email: userInfo.email, mobile: userInfo.mobile }, 'PUT');
+//获取角色列表的接口
+export const rolesList = () => ajax('/roles', {}, 'GET');
+//分配当前用户角色的接口
+export const assignRole = (userId, roleId) => ajax(`/users/${userId}/role`, { rid: roleId }, 'PUT');

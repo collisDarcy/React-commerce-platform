@@ -4,11 +4,12 @@ import {
 } from '@ant-design/icons';
 
 import { Breadcrumb, Card, Table, Divider, Radio, Input, message, Switch, Tooltip, Popconfirm, Modal, Form, Select } from 'antd';
-import { getUserListMethod, switchUserState, deleteCurrentUser, addUser } from '../../api';
+import { getUserListMethod, switchUserState, deleteCurrentUser, addUser, showCurrentUser, editUserInfo, rolesList, assignRole } from '../../api';
 import { formateDate } from '../../utils/formateDate';
 import './index.css'
 import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem';
 import Draggable from 'react-draggable';
+import FormItem from 'antd/es/form/FormItem';
 const { Search } = Input;
 const { Option } = Select;
 //角色路由
@@ -104,13 +105,14 @@ class Role extends Component {
         bottom: 0,
         right: 0
       },
-      //添加用户的表单数据
-      addForm: {
-        username: '',
-        password: '',
-        email: '',
-        mobile: ''
-      }
+      //控制修改弹窗的显示与隐藏
+      editUserVisible: false,
+      editFormInfo: {},
+      //控制修改用户身份对话框的显示与隐藏
+      setUserRoleVisbile: false,
+      //获取角色列表
+      userRoleList: [],
+      editUserRoleInfo: {},
     }
   }
 
@@ -205,13 +207,81 @@ class Role extends Component {
       open: false
     })
   }
-  onFinish = (value) => {
-    console.log('Finish', value);
+  //控制修改用户信息的弹窗的显示与隐藏
+  handleEditVisible = async (e) => {
+    const { data: res } = await showCurrentUser(e.id);
+    if (res.meta.status !== 200) {
+      message.error('获取当前用户信息失败!');
+    }
+    message.success('获取当前用户信息成功!');
+    this.setState({
+      editFormInfo: res.data,
+      editUserVisible: true
+    })
   }
-  //弹窗ref
+  handleEditUserOk = async () => {
+    const { editFormInfo } = this.state;
+    const { data: res } = await editUserInfo(editFormInfo.id, this.EditFormUserRef.current.getFieldsValue());
+    if (res.meta.status !== 200) {
+      message.error('当前用户信息更新失败!');
+    }
+    message.success('当前用户信息更新成功!');
+    this.setState({
+      editUserVisible: false
+    })
+    this.getUserList();
+  }
+  handleEditUserCancel = () => {
+    this.setState({
+      editUserVisible: false
+    })
+    message.success('取消成功!');
+  }
+  //控制修改当前用户身份的对话框的显示与隐藏的函数
+  handleSetRoleVisible = async (e) => {
+    const { data: res } = await rolesList();
+    if (res.meta.status !== 200) {
+      message.error('获取角色列表失败!');
+    }
+    message.success('获取角色列表成功!');
+    this.setState({
+      setUserRoleVisbile: true,
+      userRoleList: res.data,
+      editUserRoleInfo: e
+    })
+
+  }
+  handleSetUserRoleOk = () => {
+    this.setState({
+      setUserRoleVisbile: false,
+    })
+    this.getUserList();
+  }
+  handleSetUserRoleCancel = () => {
+    message.success('取消分配角色成功!');
+    this.setState({
+      setUserRoleVisbile: false
+    })
+  }
+  getSelectValue = async (selectedId) => {
+    console.log(selectedId);
+    const { editUserRoleInfo } = this.state;
+    const { data: res } = await assignRole(editUserRoleInfo.id, selectedId);
+    console.log('res', res);
+    if (res.meta.status !== 200) {
+      return message.error('分配角色失败!');
+    }
+    message.success('分配角色成功!');
+  }
+  //
+  //弹窗移动的ref
   draggleRef = React.createRef();
-  //表单ref
+  //表单内容的ref
   formRef = React.createRef();
+  //编辑用户信息的ref
+  EditFormUserRef = React.createRef();
+  //编辑用户身份的Ref
+  setUserRoleRef = React.createRef();
   onStart = (_event, uiData) => {
     const { clientWidth, clientHeight } = window.document.documentElement;
     const targetRect = this.draggleRef.current?.getBoundingClientRect();
@@ -228,7 +298,7 @@ class Role extends Component {
     })
   };
   render() {
-    const { selectionType, usersList, pagination, loading, open, disabled, bounds } = this.state;
+    const { selectionType, usersList, pagination, loading, open, disabled, bounds, editUserVisible, editFormInfo, setUserRoleVisbile, editUserRoleInfo, userRoleList } = this.state;
     const columns = [
       {
         title: 'ID',
@@ -282,7 +352,7 @@ class Role extends Component {
 
           return (
             <div className='tableLast'>
-              <span>
+              <span onClick={() => this.handleEditVisible(record)}>
                 <Tooltip placement='top' title='编辑'>
                   <FormOutlined />
                 </Tooltip>
@@ -294,7 +364,7 @@ class Role extends Component {
                   </Tooltip>
                 </span>
               </Popconfirm>
-              <span>
+              <span onClick={() => this.handleSetRoleVisible(record)}>
                 <Tooltip placement='top' title='设置'>
                   <SettingOutlined />
                 </Tooltip>
@@ -363,6 +433,7 @@ class Role extends Component {
             />
           </Card>
         </section>
+        {/* 添加用户的弹窗 */}
         <Modal
           title={
             <div
@@ -401,7 +472,7 @@ class Role extends Component {
             </Draggable>
           )}
         >
-          <Form ref={this.formRef} onFinish={this.onFinish}>
+          <Form ref={this.formRef}>
             <Form.Item
               name="username"
               label="Name"
@@ -486,6 +557,164 @@ class Role extends Component {
               <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
             </Form.Item>
 
+          </Form>
+        </Modal>
+        {/* 修改用户信息 */}
+        <Modal
+          title={
+            <div
+              style={{
+                width: '100%',
+                cursor: 'move',
+              }}
+              onMouseOver={() => {
+                if (disabled) {
+                  this.setState({
+                    disabled: false
+                  })
+                }
+              }}
+              onMouseOut={() => {
+                this.setState({
+                  disabled: true
+                })
+              }}
+              onFocus={() => { }}
+              onBlur={() => { }}
+            >
+              添加用户
+            </div>
+          }
+          open={editUserVisible}
+          onOk={this.handleEditUserOk}
+          onCancel={this.handleEditUserCancel}
+          modalRender={(modal) => (
+            <Draggable
+              disabled={disabled}
+              bounds={bounds}
+              onStart={(event, uiData) => this.onStart(event, uiData)}
+            >
+              <div ref={this.draggleRef}>{modal}</div>
+            </Draggable>
+          )}
+        >
+          <Form ref={this.EditFormUserRef}>
+            <Form.Item
+              name="username"
+              label="Name"
+              initialValue={editFormInfo.username}
+              rules={[
+                {
+                  required: true, message: 'The username lenght at least four characters!'
+                }, {
+                  min: 4, message: 'The username lenght at least four characters!'
+                }, {
+                  max: 12, message: 'The username length at most twelve characters!'
+                }, {
+                  pattern: /^[a-zA-Z0-9_]+$/, message: 'The username is made of English,digitals,and underscroes'
+                }
+              ]}
+            >
+              <Input type='text' maxLength={17} disabled />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="E-mail"
+              initialValue={editFormInfo.email}
+              rules={[
+                {
+                  type: 'email',
+                  message: 'The input is not valid E-mail!',
+                },
+                {
+                  required: true,
+                  message: 'Please input your E-mail!',
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="mobile"
+              label="Phone Number"
+              initialValue={editFormInfo.mobile}
+              rules={[
+                { required: true, message: 'Please input your phone number!' },
+                { validator: MobileRule, validateTrigger: 'blur' }
+              ]}
+            >
+              <Input addonBefore={prefixSelector} style={{ width: '100%' }} r />
+            </Form.Item>
+
+          </Form>
+        </Modal>
+        {/* 分配角色身份 */}
+        <Modal
+          title={
+            <div
+              style={{
+                width: '100%',
+                cursor: 'move',
+              }}
+              onMouseOver={() => {
+                if (disabled) {
+                  this.setState({
+                    disabled: false
+                  })
+                }
+              }}
+              onMouseOut={() => {
+                this.setState({
+                  disabled: true
+                })
+              }}
+              onFocus={() => { }}
+              onBlur={() => { }}
+            >
+              添加用户
+            </div>
+          }
+          open={setUserRoleVisbile}
+          onOk={this.handleSetUserRoleOk}
+          onCancel={this.handleSetUserRoleCancel}
+          modalRender={(modal) => (
+            <Draggable
+              disabled={disabled}
+              bounds={bounds}
+              onStart={(event, uiData) => this.onStart(event, uiData)}
+            >
+              <div ref={this.draggleRef}>{modal}</div>
+            </Draggable>
+          )}
+        >
+          <Form ref={this.setUserRoleRef}>
+            <Form.Item
+              name="username"
+              label="Name"
+              initialValue={editUserRoleInfo.username}
+            >
+              <Input type='text' disabled />
+            </Form.Item>
+            <Form.Item
+              name="role_name"
+              label="RoleName"
+              initialValue={editUserRoleInfo.role_name}
+            >
+              <Input disabled />
+            </Form.Item>
+            <FormItem
+              name="assign_roles"
+              label="AssignRoles"
+              initialValue="Please select--"
+            >
+              <Select onChange={(e) => this.getSelectValue(e)}>
+                {
+                  userRoleList.map((item) => {
+                    return <Option key={item.id}>{item.roleName}</Option>
+                  })
+                }
+              </Select>
+            </FormItem>
           </Form>
         </Modal>
       </div >
