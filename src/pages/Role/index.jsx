@@ -264,10 +264,8 @@ class Role extends Component {
     })
   }
   getSelectValue = async (selectedId) => {
-    console.log(selectedId);
     const { editUserRoleInfo } = this.state;
     const { data: res } = await assignRole(editUserRoleInfo.id, selectedId);
-    console.log('res', res);
     if (res.meta.status !== 200) {
       return message.error('分配角色失败!');
     }

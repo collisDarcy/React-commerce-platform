@@ -1,79 +1,11 @@
 import React, { Component } from 'react'
-import { acquireRole, acquireRoleAuthority } from '../../api/index.js';
+import { acquireRole, acquireRoleAuthority, updateRoleAuthority } from '../../api/index.js';
 import { message, Table, Tooltip, Popconfirm, Modal, Tree } from 'antd';
 import { FormOutlined, DeleteOutlined, SettingOutlined } from '@ant-design/icons';
 import Draggable from 'react-draggable';
 import './index.css';
-const treeData = [
-  {
-    title: '0-0',
-    key: '0-0',
-    children: [
-      {
-        title: '0-0-0',
-        key: '0-0-0',
-        children: [
-          {
-            title: '0-0-0-0',
-            key: '0-0-0-0',
-          },
-          {
-            title: '0-0-0-1',
-            key: '0-0-0-1',
-          },
-          {
-            title: '0-0-0-2',
-            key: '0-0-0-2',
-          },
-        ],
-      },
-      {
-        title: '0-0-1',
-        key: '0-0-1',
-        children: [
-          {
-            title: '0-0-1-0',
-            key: '0-0-1-0',
-          },
-          {
-            title: '0-0-1-1',
-            key: '0-0-1-1',
-          },
-          {
-            title: '0-0-1-2',
-            key: '0-0-1-2',
-          },
-        ],
-      },
-      {
-        title: '0-0-2',
-        key: '0-0-2',
-      },
-    ],
-  },
-  {
-    title: '0-1',
-    key: '0-1',
-    children: [
-      {
-        title: '0-1-0-0',
-        key: '0-1-0-0',
-      },
-      {
-        title: '0-1-0-1',
-        key: '0-1-0-1',
-      },
-      {
-        title: '0-1-0-2',
-        key: '0-1-0-2',
-      },
-    ],
-  },
-  {
-    title: '0-2',
-    key: '0-2',
-  },
-];
+
+//树形数据结构数组
 class Authority extends Component {
   constructor(props) {
     super(props);
@@ -81,12 +13,6 @@ class Authority extends Component {
       roleList: [],//所有角色的列表数据
       rightsList: [],//获取用户权限数据
       setRightDialogVisible: false,//控制分配权限对话框的显示与隐藏
-      //树形控件的属性绑定对象
-      treeProps: {
-        label: 'authName',
-        children: 'children'
-      },
-      defaultKeys: [],//默认选中的节点的id值数组
       roleId: '',//当前即将分配权限的角色id
       loading: false,
       disabled: false,
@@ -98,11 +24,12 @@ class Authority extends Component {
         right: 0
       },
       //tree图的属性
-      expandedKeys: ['0-0-0', '0-0-1'],
-      checkedKeys: ['0-0-0'],
+      expandedKeys: [],
+      checkedKeys: [],
       selectedKeys: [],
       autoExpandParent: true
     }
+    this.updateAuthorityRef = React.createRef();
   }
   componentDidMount() {
     this.getRolesList();
@@ -118,13 +45,11 @@ class Authority extends Component {
       roleList: res.data
     })
   }
-  // handleEditVisible = () => {
-  //   console.log('111');
-  // }
   handleSetRoleVisible = async (record) => {
-    console.log('record', record);
-    const { defaultKeys } = this.state;
+    // console.log('record', record);
+    const { checkedKeys } = this.state;
     const { data: res } = await acquireRoleAuthority();
+    console.log('res.data', res.data);
     if (res.meta.status !== 200) {
       return message.error('获取当前角色权限失败!');
     }
@@ -132,38 +57,63 @@ class Authority extends Component {
 
     this.setState({
       setRightDialogVisible: true,
-      rightsList: res.data
+      rightsList: res.data,
+      roleId: record.id
     })
-    //将得到的数据转换
-    this.getLeafKeys(record, defaultKeys);
+    //当前角色拥有的权限
+    this.getLeafKeys(record, checkedKeys);
+    //将得到的数据转换为tree树形数据
+    this.treeDataList = this.getTreeDataList(res.data);
   }
-  //通过递归的方式获取角色下的子级权限
+
+  //将得到的数组转换为树形数组结构
+  getTreeDataList = (dataList) => {
+    return dataList.reduce((pre, item) => {
+      pre.push({
+        title: item.authName,
+        key: item.id,
+        children: item.children ? this.getTreeDataList(item.children) : null
+      })
+      return pre;
+    }, [])
+  }
+
+  //通过递归的方式获取角色下的子级权限--当前角色拥有的权限
   getLeafKeys = (currentRecord, arr) => {
     if (!currentRecord.children) {
       return arr.push(currentRecord.id);
     }
     currentRecord.children.forEach((item) => this.getLeafKeys(item, arr));
   }
-  //这是删除的确定和取消
-  // onConfirm = () => {
-  //   message.success('删除成功!');
-  // }
-  // onCancel = () => {
-  //   message.success('取消分配角色!');
-  //   this.setState({
-  //     setRightDialogVisible: false
-  //   })
-  // }
-  handleCurrentAuthorityOk = () => {
+  onConfirm = () => {
+    message.success('删除成功!');
+  }
+  onCancel = () => {
+    message.success('取消分配角色!');
+    this.setState({
+      setRightDialogVisible: false
+    })
+  }
+  handleCurrentAuthorityOk = async () => {
+    //发起更新权限的请求
+    const IdStr = this.updateAuthorityRef.current.props.checkedKeys.join(',');//数组转字符串
+    const { roleId } = this.state;
+    const { data: res } = await updateRoleAuthority(roleId, IdStr);
+    if (res.meta.status !== 200) {
+      return message.error('更新失败!');
+    }
+    message.success('更新成功!');
+    this.getRolesList();
     this.setState({
       setRightDialogVisible: false,
-      defaultKeys: []
+      checkedKeys: []
     })
   }
   handleCurrentAuthorityCancel = () => {
+    message.success('取消更新!');
     this.setState({
       setRightDialogVisible: false,
-      defaultKeys: []
+      checkedKeys: []
     })
   }
   //tree树图的方法
@@ -175,7 +125,7 @@ class Authority extends Component {
     })
   }
   onCheck = (checkedKeysValue) => {
-    console.log('selectedKeysValue', checkedKeysValue);
+    console.log('checkedKeyValue', checkedKeysValue);
     this.setState({
       checkedKeys: checkedKeysValue
     })
@@ -204,8 +154,7 @@ class Authority extends Component {
     })
   };
   render() {
-    const { roleList, loading, setRightDialogVisible, disabled, bounds, expandedKeys, checkedKeys, selectedKeys, autoExpandParent, rightsList } = this.state;
-    console.log(rightsList, '23');
+    const { roleList, loading, setRightDialogVisible, disabled, bounds, selectedKeys, autoExpandParent, checkedKeys } = this.state;
     const columns = [
       {
         title: 'ID',
@@ -261,6 +210,7 @@ class Authority extends Component {
           loading={loading}
           pagination={false}
           onChange={this.handleTableChange}
+          rowKey={(columns) => columns.id}
         />
         {/* 控制角色权限的对话框的显示与隐藏 */}
         <Modal
@@ -303,14 +253,16 @@ class Authority extends Component {
         >
           <Tree
             checkable
+            defaultExpandParent={true}
             onExpand={this.onExpand}
-            expandedKeys={expandedKeys}
+            expandedKeys={checkedKeys}
             autoExpandParent={autoExpandParent}
             onCheck={this.onCheck}
             checkedKeys={checkedKeys}
             onSelect={this.onSelect}
             selectedKeys={selectedKeys}
-            treeData={rightsList}
+            treeData={this.treeDataList}
+            ref={this.updateAuthorityRef}
           />
         </Modal>
       </div>

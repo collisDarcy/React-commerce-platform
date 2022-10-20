@@ -24,5 +24,7 @@ export const rolesList = () => ajax('/roles', {}, 'GET');
 export const assignRole = (userId, roleId) => ajax(`/users/${userId}/role`, { rid: roleId }, 'PUT');
 //获取角色列表数据
 export const acquireRole = () => ajax('/roles', {}, 'GET');
-//获取所有权限的数据
+//获取所有角色权限的接口
 export const acquireRoleAuthority = () => ajax('/rights/tree', {}, 'GET');
+//更新当前角色拥有权限的接口
+export const updateRoleAuthority = (roleId, IdStr) => ajax(`/roles/${roleId}/rights`, { rids: IdStr }, 'POST');
